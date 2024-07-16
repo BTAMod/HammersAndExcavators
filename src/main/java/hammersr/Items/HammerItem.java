@@ -2,7 +2,9 @@ package hammersr.Items;
 
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.tag.BlockTags;
+import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.EntityLiving;
+import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.enums.EnumDropCause;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
@@ -28,6 +30,18 @@ public class HammerItem extends ItemTool {
 		miningLevels = ItemToolPickaxe.miningLevels;
 	}
 
+	public void giveOrDrop(EntityPlayer player, ItemStack stack) {
+        if (stack == null || stack.stackSize < 1) return;
+        player.inventory.insertItem(stack, false);
+	    // Inventory full, drop the item at their feet
+        if (stack.stackSize > 0) {
+            EntityItem itementity = new EntityItem(player.world, player.x, player.y, player.z, stack);
+            player.world.entityJoinedWorld(itementity);
+            if (!player.world.isClientSide) {
+                itementity.clumpToNearbyStack();
+            }
+        }
+	}
 	public boolean canHarvestBlock(Block block) {
 		Integer mininglevel = miningLevels.get(block);
 		if (mininglevel != null) {
@@ -46,13 +60,13 @@ public class HammerItem extends ItemTool {
 					ItemStack[] itemToDrop = world.getBlock(x, y, z).getBreakResult(world, EnumDropCause.PROPER_TOOL, x, y, z, world.getBlockMetadata(x, y, z), world.getBlockTileEntity(x, y, z));
 					world.setBlockWithNotify(x, y, z, 0);
 					if (itemToDrop != null) {
-						Arrays.stream(itemToDrop).filter(Objects::nonNull).forEach(expDrop -> world.dropItem(x, y, z, expDrop));
+						Arrays.stream(itemToDrop).filter(Objects::nonNull).forEach(expDrop -> giveOrDrop((EntityPlayer) player, expDrop));
 					}
 				} else {
 					ItemStack[] itemToDrop = world.getBlock(x, y, z).getBreakResult(world, EnumDropCause.SILK_TOUCH, x, y, z, world.getBlockMetadata(x, y, z), world.getBlockTileEntity(x, y, z));
 					world.setBlockWithNotify(x, y, z, 0);
 					if (itemToDrop != null) {
-						Arrays.stream(itemToDrop).filter(Objects::nonNull).forEach(expDrop -> world.dropItem(x, y, z, expDrop));
+						Arrays.stream(itemToDrop).filter(Objects::nonNull).forEach(expDrop -> giveOrDrop((EntityPlayer) player, expDrop));
 					}
 				}
 		}
