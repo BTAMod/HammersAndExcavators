@@ -19,15 +19,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class HammerItem extends ItemTool {
-	public static Map<Block, Integer> miningLevels;
-
-
 	public HammerItem(String name, int id, ToolMaterial enumtoolmaterial) {
-		super(name, id, 2, enumtoolmaterial, BlockTags.MINEABLE_BY_PICKAXE);
-	}
-
-	static {
-		miningLevels = ItemToolPickaxe.miningLevels;
+		super(name, id, 4, enumtoolmaterial, BlockTags.MINEABLE_BY_PICKAXE);
 	}
 
 	public void giveOrDrop(EntityPlayer player, ItemStack stack) {
@@ -42,8 +35,9 @@ public class HammerItem extends ItemTool {
             }
         }
 	}
-	public boolean canHarvestBlock(Block block) {
-		Integer mininglevel = miningLevels.get(block);
+	@Override
+	public boolean canHarvestBlock(EntityLiving entityLiving, ItemStack itemStack, Block block) {
+		Integer mininglevel = ItemToolPickaxe.miningLevels.get(block);
 		if (mininglevel != null) {
 			return this.material.getMiningLevel() >= mininglevel;
 		} else {
@@ -52,6 +46,7 @@ public class HammerItem extends ItemTool {
 	}
 
 	protected void MineBlock(int x, int y, int z, World world, EntityLiving player) {
+	    if (world.isClientSide) return;
 		Item GoldItem = HAEItems.hammerGold;
 		Item heldItem = player.getHeldItem().getItem();
 		if (!world.isClientSide) {
@@ -78,8 +73,10 @@ public class HammerItem extends ItemTool {
 		return BlockMatchToBlacklist;
 	}
 
+	@Override
 	public boolean onBlockDestroyed(World world, ItemStack itemstack, int i, int j, int k, int l, EntityLiving entityliving) {
 		super.onBlockDestroyed(world, itemstack, i, j, k, l, entityliving);
+		if (Block.blocksList[i] == null || !Block.blocksList[i].hasTag(BlockTags.MINEABLE_BY_PICKAXE)) return true;
 		int x, y, z;
 		int Squ = 0;
 		int Cu = 0 ;

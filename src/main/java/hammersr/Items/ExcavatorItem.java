@@ -25,7 +25,7 @@ public class ExcavatorItem extends ItemTool {
 
 	public static Map<Block, Integer> miningLevels;
 	public ExcavatorItem(String name, int id, ToolMaterial toolMaterial) {
-		super(name,id,2,toolMaterial,BlockTags.MINEABLE_BY_SHOVEL);
+		super(name, id, 4, toolMaterial, BlockTags.MINEABLE_BY_SHOVEL);
 	}
 	static {
 		miningLevels = ItemToolPickaxe.miningLevels;
@@ -43,7 +43,8 @@ public class ExcavatorItem extends ItemTool {
         }
 	}
 
-	public boolean canHarvestBlock(Block block) {
+	@Override
+	public boolean canHarvestBlock(EntityLiving entityLiving, ItemStack itemStack, Block block) {
 		Integer mininglevel = miningLevels.get(block);
 		if (mininglevel != null) {
 			return this.material.getMiningLevel() >= mininglevel;
@@ -51,7 +52,8 @@ public class ExcavatorItem extends ItemTool {
 			return block.hasTag(BlockTags.MINEABLE_BY_SHOVEL);
 		}
 	}
-	public boolean onItemUse(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
+	@Override
+	public boolean onUseItemOnBlock(ItemStack itemstack, EntityPlayer entityplayer, World world, int blockX, int blockY, int blockZ, Side side, double xPlaced, double yPlaced) {
 		int x, y;
 		Item heldItem = entityplayer.getHeldItem().getItem();
 		Block block = Block.pathDirt;
@@ -76,6 +78,7 @@ public class ExcavatorItem extends ItemTool {
 	}
 
 	protected void MineBlock(int x, int y, int z, World world, EntityLiving player) {
+	    if (world.isClientSide) return;
 		Item GoldItem = HAEItems.excavatorGold;
 		Item heldItem = player.getHeldItem().getItem();
 		if (world.getBlock(x, y, z) != null && isBlockMatchTolist(world.getBlock(x, y, z).id, new BlockLists().BlockExcavatorsWhiteList))
@@ -99,8 +102,10 @@ public class ExcavatorItem extends ItemTool {
 		BlockMatchToBlacklist = list.contains(BlockId);
 		return BlockMatchToBlacklist;
 	}
+	@Override
 	public boolean onBlockDestroyed(World world, ItemStack itemstack, int i, int j, int k, int l, EntityLiving entityliving) {
 		super.onBlockDestroyed(world, itemstack, i, j, k, l, entityliving);
+		if (Block.blocksList[i] == null || !Block.blocksList[i].hasTag(BlockTags.MINEABLE_BY_SHOVEL)) return true;
 		Item heldItem = entityliving.getHeldItem().getItem();
 		int Off1, Off2;
 		int Squ;
