@@ -103,8 +103,8 @@ public class ExcavatorItem extends ItemTool {
 		return BlockMatchToBlacklist;
 	}
 	@Override
-	public boolean onBlockDestroyed(World world, ItemStack itemstack, int i, int j, int k, int l, EntityLiving entityliving) {
-		super.onBlockDestroyed(world, itemstack, i, j, k, l, entityliving);
+	public boolean onBlockDestroyed(World world, ItemStack itemstack, int i, int j, int k, int l, Side side, EntityLiving entityliving) {
+		super.onBlockDestroyed(world, itemstack, i, j, k, l, side, entityliving);
 		if (Block.blocksList[i] == null || !Block.blocksList[i].hasTag(BlockTags.MINEABLE_BY_SHOVEL)) return true;
 		Item heldItem = entityliving.getHeldItem().getItem();
 		int Off1, Off2;

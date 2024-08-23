@@ -12,6 +12,7 @@ import net.minecraft.core.item.material.ToolMaterial;
 import net.minecraft.core.item.tool.ItemTool;
 import net.minecraft.core.item.tool.ItemToolPickaxe;
 import net.minecraft.core.util.helper.Direction;
+import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.world.World;
 import java.util.Arrays;
 import java.util.List;
@@ -74,8 +75,8 @@ public class HammerItem extends ItemTool {
 	}
 
 	@Override
-	public boolean onBlockDestroyed(World world, ItemStack itemstack, int i, int j, int k, int l, EntityLiving entityliving) {
-		super.onBlockDestroyed(world, itemstack, i, j, k, l, entityliving);
+	public boolean onBlockDestroyed(World world, ItemStack itemstack, int i, int j, int k, int l, Side side, EntityLiving entityliving) {
+		super.onBlockDestroyed(world, itemstack, i, j, k, l, side, entityliving);
 		if (Block.blocksList[i] == null || !Block.blocksList[i].hasTag(BlockTags.MINEABLE_BY_PICKAXE)) return true;
 		int x, y, z;
 		int Squ = 0;
